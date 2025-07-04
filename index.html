@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Thesis: From Assistant to Collaborator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Scholarly Neutrals (#FDFBF7, #2c3e50, #3498db) -->
+    <!-- Application Structure Plan: A single-page narrative structure with four main sections: Background, Methodology, Contribution, and Outlook. This consolidated structure improves navigation for an academic audience while maintaining the detailed, slide-by-slide flow within each section. The goal is to present a deep-dive academic paper in a clear, explorable, and professional web format. -->
+    <!-- Visualization & Content Choices: Main quantitative results (Goal: Compare) are shown using an interactive bar chart (Chart.js/Canvas) controlled by filter buttons. The AISET theory (Goal: Organize/Inform) is visualized as an interactive diagram using HTML/CSS/Tailwind. Qualitative data (Goal: Inform) is presented in themed cards. This multi-format approach addresses different information types effectively without using SVG or Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Roboto', 'Noto Sans TC', sans-serif; background-color: #f8f9fa; color: #212529; }
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 60vh; max-height: 400px; md:height: 500px; md:max-height: 500px; }
+        .main-section-title { font-size: 2.5rem; md:font-size: 3rem; font-weight: 700; color: #2c3e50; margin-bottom: 1rem; text-align: center; padding-top: 5rem; }
+        .main-section-subtitle { font-size: 1.25rem; md:font-size: 1.5rem; font-weight: 400; color: #34495e; margin-bottom: 4rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .slide-title { font-size: 1.75rem; md:font-size: 2.25rem; font-weight: 700; color: #2c3e50; margin-bottom: 1rem; text-align: center; }
+        .slide-subtitle { font-size: 1rem; md:font-size: 1.15rem; font-weight: 400; color: #34495e; margin-bottom: 2.5rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .nav-link { transition: all 0.3s ease; color: #ecf0f1; padding: 8px 15px; border-radius: 5px; }
+        .nav-link:hover, .nav-link.active { color: #ffffff; background-color: rgba(52, 152, 219, 0.3); }
+        .btn-filter { transition: all 0.3s ease; }
+        .btn-filter.active { background-color: #3498db; color: white; box-shadow: 0 4px 14px 0 rgba(52, 152, 219, 0.39); }
+        .theory-card { transition: all 0.3s ease; }
+        .theory-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .slide { min-height: 100vh; padding: 6rem 1rem; md:padding: 6rem 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 1px solid #e0e0e0; }
+        .main-section { background-color: #ffffff; }
+        .main-section:nth-child(odd) { background-color: #f0f4f8; }
+        .cover-gradient { background: linear-gradient(135deg, #2c3e50 0%, #4a6a8a 100%); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-[#2c3e50] p-3 fixed w-full z-20 shadow-lg transition-all duration-300">
+        <nav class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-white">NTU GMBA Thesis</h1>
+            <div class="hidden lg:flex flex-wrap space-x-4">
+                <a href="#background" class="nav-link">Background</a>
+                <a href="#methodology" class="nav-link">Methodology</a>
+                <a href="#contribution" class="nav-link">Contribution</a>
+                <a href="#outlook" class="nav-link">Outlook</a>
+            </div>
+            <div class="lg:hidden">
+                <button id="menu-btn" class="text-white focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden lg:hidden">
+            <a href="#background" class="block text-white text-center py-2">Background</a>
+            <a href="#methodology" class="block text-white text-center py-2">Methodology</a>
+            <a href="#contribution" class="block text-white text-center py-2">Contribution</a>
+            <a href="#outlook" class="block text-white text-center py-2">Outlook</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Section 1: Background -->
+        <section id="background" class="main-section">
+            <div class="slide cover-gradient text-white" id="slide-1">
+                <div class="grid md:grid-cols-2 items-center gap-8 max-w-6xl w-full">
+                    <div class="text-center md:text-left">
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">From Assistant to Collaborator</h1>
+                        <p class="text-lg md:text-xl lg:text-2xl font-light mb-6">The Role of Generative AI in Hybrid Intelligence Decision-Making</p>
+                        <hr class="border-t-2 border-blue-300 w-24 my-6 mx-auto md:mx-0">
+                        <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold font-sans">從助理到協作者</h2>
+                        <p class="text-base md:text-lg font-light">生成式AI在人機協作智慧決策中的角色</p>
+                    </div>
+                    <div class="text-center text-lg">
+                        <p>Wenzel Herder (何則文)</p>
+                        <p class="mt-4">Advisor: Dr. Kuan-Chou Ko</p>
+                        <p class="mt-8 text-sm opacity-80">National Taiwan University, College of Management<br>Master's Thesis</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-2">
+                <h2 class="slide-title">The AI Revolution: A Future Already Here</h2>
+                <p class="slide-subtitle">AI is evolving from an efficiency tool into a strategic partner, deeply integrating into the core decision-making processes of global industries.</p>
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <div class="text-5xl mb-4">🧠</div>
+                        <h3 class="text-xl font-bold text-[#3498db] mb-2">Strategic Level</h3>
+                        <p>Salesforce's AI Agent automates and simulates complex multi-channel marketing campaigns, acting not just as an executor but as a virtual strategist to help businesses predict market reactions.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <div class="text-5xl mb-4">📈</div>
+                        <h3 class="text-xl font-bold text-[#2ecc71] mb-2">Analytical Level</h3>
+                        <p>JPMorgan deploys its LLM Suite as an "AI Research Analyst" to rapidly digest vast financial reports and market data, aiding wealth management in making timely, insightful investment decisions.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <div class="text-5xl mb-4">🚚</div>
+                        <h3 class="text-xl font-bold text-[#e67e22] mb-2">Operational Level</h3>
+                        <p>Microsoft Azure's AI platform helps retailers optimize their supply chains through precise demand forecasting and inventory management, significantly reducing operational risks and costs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-3">
+                <h2 class="slide-title">AI's Advantages in the Literature</h2>
+                <p class="slide-subtitle">According to existing literature, AI as an auxiliary tool primarily demonstrates its powerful advantages at the cognitive, efficiency, and decision-making levels.</p>
+                <div class="w-full max-w-3xl bg-white p-8 rounded-xl shadow-2xl relative flex items-center justify-center">
+                     <div class="text-center">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="p-4 bg-gray-100 rounded-lg text-center md:col-span-2">
+                                <div class="text-4xl mb-2">🧠</div>
+                                <h4 class="font-bold text-lg">Cognitive Augmentation</h4>
+                                <p class="text-sm">Like an external hard drive for the brain, AI acts as an infinite external memory, processing and storing vast amounts of information to reduce human mental load, allowing us to focus on higher-level thinking (Clark & Chalmers, 1998).</p>
+                            </div>
+                            <div class="p-4 bg-gray-100 rounded-lg text-center">
+                                <div class="text-4xl mb-2">⚡️</div>
+                                <h4 class="font-bold text-lg">Efficiency Boost</h4>
+                                <p class="text-sm">By automating repetitive, rule-based tasks, AI frees up human resources from tedious work. Studies show that implementing AI assistants can increase customer service productivity by an average of 14% (Brynjolfsson et al., 2023).</p>
+                            </div>
+                             <div class="p-4 bg-gray-100 rounded-lg text-center">
+                                <div class="text-4xl mb-2">🎯</div>
+                                <h4 class="font-bold text-lg">Decision Support</h4>
+                                <p class="text-sm">AI excels at identifying patterns and trends from complex data, providing analysis-based recommendations that effectively assist humans in making more accurate and consistent judgments in uncertain situations (Jarrahi, 2018).</p>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-4">
+                <h2 class="slide-title">The Core Dilemma: Perils of Human-AI Collaboration</h2>
+                <p class="slide-subtitle">Despite AI's significant advantages, its integration also poses profound challenges to human cognition, team interaction, and decision quality.</p>
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-xl border-l-4 border-red-500">
+                        <h3 class="text-xl font-bold text-red-500 mb-3">Cognitive Debt</h3>
+                        <p>Over-reliance on external information search (the "Google Effect," Sparrow et al., 2011) and AI tools can lead to a decline in internal memory and critical thinking skills. In the long run, we may lose core competencies in independent analysis (Kosmyna et al., 2025).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-xl border-l-4 border-yellow-500">
+                        <h3 class="text-xl font-bold text-yellow-500 mb-3">Homogenization of Thought</h3>
+                        <p>When team members all turn to the same AI for answers, the standardized, optimized solutions it provides can converge the team's thinking, stifling necessary cognitive diversity and severely limiting the potential for breakthrough innovation (Page, 2007).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-xl border-l-4 border-purple-500">
+                        <h3 class="text-xl font-bold text-purple-500 mb-3">Algorithm Aversion</h3>
+                        <p>Humans have a psychological tendency to distrust or even reject decisions made by non-human entities (algorithms), especially after the algorithm makes even a minor mistake, this distrust is disproportionately amplified (Dietvorst, Simmons, & Massey, 2015).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-5">
+                <h2 class="slide-title">Research Gap & Core Questions</h2>
+                <p class="slide-subtitle">While past research has focused on AI's technical functions, this study investigates the impact of its "social role."</p>
+                <div class="w-full max-w-4xl bg-white p-8 rounded-xl shadow-2xl">
+                    <ul class="space-y-4 text-lg">
+                        <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">Q1:</span><span>How does framing AI as a "team member" versus a "personal assistant" affect team engagement?</span></li>
+                        <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">Q2:</span><span>Does treating AI as a team member foster more innovative team decisions?</span></li>
+                        <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">Q3:</span><span>Can this framing improve the speed and accuracy of team decision-making?</span></li>
+                        <li class="flex items-start"><span class="text-blue-500 font-bold mr-3">Q4:</span><span>In AI-assisted decision-making, which is more effective: human critique or AI critique?</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="slide" id="slide-6">
+                <h2 class="slide-title">Standing on the Shoulders of Giants: Theoretical Foundations</h2>
+                <p class="slide-subtitle">This study builds its analytical framework by integrating classic theories from psychology, organizational behavior, and information systems.</p>
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl w-full">
+                    <div class="theory-card bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h3 class="text-xl font-bold text-[#3498db] mb-2">Motivational Lens</h3>
+                        <p class="font-semibold">Self-Determination Theory (Ryan & Deci, 2000)</p>
+                        <p class="text-sm text-gray-600 mt-2">This theory posits that humans have three innate, basic psychological needs: autonomy, competence, and relatedness. When the external environment supports these needs, individuals exhibit the highest quality of intrinsic motivation and psychological well-being.</p>
+                    </div>
+                    <div class="theory-card bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h3 class="text-xl font-bold text-[#2ecc71] mb-2">Cognitive Lens</h3>
+                        <p class="font-semibold">Collective Intelligence Theory (Malone & Bernstein, 2015)</p>
+                        <p class="text-sm text-gray-600 mt-2">This theory argues that a group's collective intelligence is not a simple sum of its members' individual intelligence. It depends more on the quality of interaction among members, especially social perceptiveness, equality in conversational turn-taking, and the effective integration of cognitive diversity.</p>
+                    </div>
+                    <div class="theory-card bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h3 class="text-xl font-bold text-[#9b59b6] mb-2">Process Lens</h3>
+                        <p class="font-semibold">Socio-Technical Systems Theory (Trist, 1981)</p>
+                        <p class="text-sm text-gray-600 mt-2">This theory emphasizes that any organization is a composite of a "social system" (people, teams, culture) and a "technical system" (tools, equipment, processes). To achieve optimal performance, both subsystems must be jointly optimized, rather than focusing solely on technical efficiency.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Methodology -->
+        <section id="methodology" class="main-section">
+            <div class="slide" id="slide-7">
+                <h2 class="slide-title">Hypothesis 1: AI as a Collaborator Enhances Engagement</h2>
+                <p class="slide-subtitle font-mono bg-gray-100 p-2 rounded">H1: When AI is treated as a team member rather than merely a tool, team members will feel more engaged and be more willing to express their own opinions, leading to higher participation.</p>
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold mb-2">Assistant Mode</h3>
+                        <p>Leads to responsibility offloading and passive reliance, causing members to feel detached and reducing motivation.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg border-2 border-blue-500">
+                        <h3 class="text-xl font-bold mb-2">Collaborator Mode</h3>
+                        <p>AI as a conversational partner fulfills members' needs for autonomy and relatedness (Ryan & Deci, 2000), thereby boosting intrinsic motivation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-8">
+                <h2 class="slide-title">Hypothesis 2: AI as a Collaborator Sparks Innovation</h2>
+                <p class="slide-subtitle font-mono bg-gray-100 p-2 rounded">H2: When AI is treated as a team member rather than merely a personal assistant, teams will generate more creative and original decisions, as members are more likely to contribute their own unique ideas.</p>
+                 <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold mb-2">Assistant Mode</h3>
+                        <p>Leads to "homogenization of thought" as members receive similar answers from the same AI, limiting cognitive diversity.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg border-2 border-green-500">
+                        <h3 class="text-xl font-bold mb-2">Collaborator Mode</h3>
+                        <p>Encourages members to think independently first, then collide their ideas with AI's, facilitating knowledge "externalization" and "combination" (Nonaka & Takeuchi, 1995).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-9">
+                <h2 class="slide-title">Hypothesis 3: AI as a Collaborator Optimizes Efficiency</h2>
+                <p class="slide-subtitle font-mono bg-gray-100 p-2 rounded">H3: When AI is treated as a team member rather than merely a personal assistant, teams will be able to integrate ideas more effectively, leading to faster and more accurate decision-making.</p>
+                 <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold mb-2">Assistant Mode</h3>
+                        <p>Members discuss with information from AI that lacks a shared context, wasting time on alignment.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg border-2 border-purple-500">
+                        <h3 class="text-xl font-bold mb-2">Collaborator Mode</h3>
+                        <p>AI acts as a real-time "information integrator," summarizing and clarifying to reduce the team's overall cognitive load (Sweller, 1988).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-10">
+                <h2 class="slide-title">Experiment Design & Background</h2>
+                <p class="slide-subtitle">This pilot study was conducted on November 26, 2024, at the NTU College of Management to provide baseline data and initial insights for a larger-scale experiment.</p>
+                <div class="max-w-5xl mx-auto bg-white p-8 rounded-xl shadow-2xl w-full">
+                    <h3 class="text-xl font-bold text-center mb-4">Participants (N=60)</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div class="bg-blue-100 p-4 rounded-lg">
+                            <p class="text-4xl">🎓</p>
+                            <p class="text-2xl font-bold">21</p>
+                            <p class="text-sm">Undergraduate Students</p>
+                        </div>
+                        <div class="bg-green-100 p-4 rounded-lg">
+                            <p class="text-4xl">📚</p>
+                            <p class="text-2xl font-bold">5</p>
+                            <p class="text-sm">Graduate Students (Master's)</p>
+                        </div>
+                        <div class="bg-yellow-100 p-4 rounded-lg">
+                            <p class="text-4xl">💼</p>
+                            <p class="text-2xl font-bold">26</p>
+                            <p class="text-sm">EiMBA Students</p>
+                        </div>
+                        <div class="bg-purple-100 p-4 rounded-lg">
+                            <p class="text-4xl">🌍</p>
+                            <p class="text-2xl font-bold">8</p>
+                            <p class="text-sm">International Students</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-10b">
+                <h2 class="slide-title">Experimental Procedure & Measurement Dimensions</h2>
+                <p class="slide-subtitle">The experiment revolves around two main variables and assesses the participant experience across six key dimensions.</p>
+                <div class="grid md:grid-cols-2 gap-8 max-w-6xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">Experimental Procedure</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start"><span class="text-2xl mr-3">🤖</span><div><span class="font-bold">A/B Groups (GPT Usage Mode):</span><br><span class="text-sm">Group A members used GPT individually as a personal assistant; Group B treated GPT as an independent team member for communication and collaboration.</span></div></div>
+                            <div class="flex items-start"><span class="text-2xl mr-3">🗣️</span><div><span class="font-bold">-1/-2 Groups (Critique Method):</span><br><span class="text-sm">In mode -1, the final proposal was critiqued and revised by human members; in mode -2, it was critiqued by GPT.</span></div></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">Six Measurement Dimensions</h3>
+                        <p class="text-sm mb-4">The questionnaire was designed based on six psychological and behavioral dimensions, each containing three items to comprehensively assess the participant's experience:</p>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div class="flex items-center"><span class="text-xl mr-2">🔥</span>Work Engagement</div>
+                            <div class="flex items-center"><span class="text-xl mr-2">✋</span>Participation</div>
+                            <div class="flex items-center"><span class="text-xl mr-2">💡</span>Innovation</div>
+                            <div class="flex items-center"><span class="text-xl mr-2">😊</span>Satisfaction</div>
+                            <div class="flex items-center"><span class="text-xl mr-2">⏱️</span>Discussion Efficiency</div>
+                            <div class="flex items-center"><span class="text-xl mr-2">🛡️</span>Trust</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide" id="slide-11">
+                <h2 class="slide-title">Participant Profile & Measurement Tools</h2>
+                <p class="slide-subtitle">The study recruited 60 participants with diverse backgrounds and used a validated scale for measurement.</p>
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg flex items-center">
+                        <div class="text-5xl mr-6">👥</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-3">Participant Profile</h3>
+                            <p>A total of 60 participants, including undergraduate, master's, EiMBA, and international students. This mixed sample from diverse educational and cultural backgrounds helps enhance the external validity and richness of the research findings.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg flex items-center">
+                        <div class="text-5xl mr-6">📏</div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-3">Measurement Tools</h3>
+                            <p>A 21-item Likert five-point scale was used, demonstrating high reliability (Cronbach's α = 0.85-0.91), adapted from classic scales such as Glikson & Woolley (2020) and Kahn (1990).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-12">
+                <h2 class="slide-title">Interactive Quantitative Results</h2>
+                <p class="slide-subtitle">Click the buttons below to explore the data from different comparative dimensions. The chart clearly shows the comprehensive advantage of the "Collaborator Mode."</p>
+                <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                    <button id="btn-all" class="btn-filter py-2 px-4 rounded-full bg-white shadow font-semibold">All Groups</button>
+                    <button id="btn-mode" class="btn-filter py-2 px-4 rounded-full bg-white shadow font-semibold">Role Comparison (A vs B)</button>
+                    <button id="btn-critique" class="btn-filter py-2 px-4 rounded-full bg-white shadow font-semibold">Critique Comparison (-1 vs -2)</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="resultsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-13">
+                <h2 class="slide-title">Quantitative Results II: The Unique Value of Human Critique</h2>
+                <p class="slide-subtitle">The data shows that human-led critical reflection is significantly superior to AI-generated critique across multiple dimensions.</p>
+                <div class="w-full max-w-5xl bg-white p-8 rounded-xl shadow-2xl grid md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-4">
+                        <div class="flex items-center"><span class="text-2xl mr-4">🤝</span><p>Significantly higher <span class="font-bold">Engagement</span> (t(58)=2.45, p=.017, d=0.36)</p></div>
+                        <div class="flex items-center"><span class="text-2xl mr-4">💡</span><p>Significantly higher <span class="font-bold">Innovation</span> (t(58)=2.32, p=.024, d=0.34)</p></div>
+                        <div class="flex items-center"><span class="text-2xl mr-4">💖</span><p>Significantly higher <span class="font-bold">Trust</span> (t(58)=2.61, p=.012, d=0.38)</p></div>
+                    </div>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
+                        <h3 class="text-xl font-bold text-red-600 mb-2">Counterintuitive Finding</h3>
+                        <p>Even in "Efficiency," human critique showed a marginally significant advantage (t(58)=1.98, p=.052, d=0.29), suggesting that good critique builds consensus quickly and can be more efficient.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-14">
+                <h2 class="slide-title">The Optimal Combination: Excellence of Group B-1</h2>
+                <p class="slide-subtitle">"Collaborator AI + Human Critique" is the current best practice for human-AI collaboration.</p>
+                <div class="w-full max-w-4xl text-center">
+                    <div class="bg-white p-8 rounded-full shadow-2xl border-4 border-amber-400 inline-block">
+                        <span class="text-6xl">🏆</span>
+                        <h3 class="text-3xl font-bold text-[#2c3e50] mt-4">Group B-1</h3>
+                        <p class="text-lg text-gray-600">AI as Team Member + Human Critique</p>
+                    </div>
+                    <div class="mt-8 text-lg bg-blue-50 p-6 rounded-lg grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center"><span class="text-2xl">🤝</span><p class="mt-1">Maximizes <span class="font-bold">Motivation</span> (SDT)</p></div>
+                        <div class="text-center"><span class="text-2xl">💡</span><p class="mt-1">Promotes <span class="font-bold">Cognitive</span> Diversity (CI)</p></div>
+                        <div class="text-center"><span class="text-2xl">⚙️</span><p class="mt-1">Optimizes <span class="font-bold">Process</span> Integration (STS)</p></div>
+                        <p class="md:col-span-3 mt-2">This demonstrates that treating AI as an equal collaborative partner most effectively stimulates a team's collective intelligence. When humans retain final critical authority, the benefits of this partnership are maximized.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-15">
+                <h2 class="slide-title">Qualitative Insights: What Participants Said</h2>
+                <p class="slide-subtitle">Real feedback from participants provides vivid context for the quantitative data.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">"GPT was great at quickly structuring our discussion, which saved a lot of time." - Zoe, A-2</div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">"GPT brought up some new angles we hadn't considered." - Sani, B-2</div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">"I wish GPT would cite its sources to increase credibility." - Deng, A-2</div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">"The suggestions were too broad and lacked depth." - Ye, B-2</div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">"Treating the AI as a teammate was fun; I found myself unconsciously competing with it to come up with better ideas."</div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">"The AI's critique was objective, but it lacked a human touch and wasn't very motivating."</div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">"Our discussion became very focused because the AI provided real-time summaries."</div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">"It would be more helpful if the AI could understand our 'jargon' and background context."</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Contribution -->
+        <section id="contribution" class="main-section">
+            <div class="slide" id="slide-16">
+                <h2 class="slide-title">Core Contribution: AI Social Embeddedness Theory (AISET)</h2>
+                <p class="slide-subtitle">To explain the experimental findings, this study proposes a novel theoretical hypothesis, AISET, which integrates sociology, psychology, and human-computer interaction to effectively explain and guide the future development of AI.</p>
+                 <div class="w-full max-w-4xl text-center bg-white p-8 rounded-xl shadow-2xl">
+                    <p class="text-xl">The value of AI lies not only in its technical functions but, more importantly, in the degree to which it is perceived and accepted by the team as a "<span class="font-bold text-blue-600">Socially Embedded Collaborator.</span>" This theory posits that AI should be designed as a social entity capable of interacting, adapting to context, and building connections with the team, rather than just being a passive tool. This provides a new framework that moves beyond "functional complementarity," emphasizing that AI's "social attributes" within a team are key to enhancing collaborative performance and overcoming algorithm aversion.</p>
+                 </div>
+            </div>
+
+            <div class="slide" id="slide-17">
+                <h2 class="slide-title">Theoretical Construction of AISET: Constructs and Mechanisms</h2>
+                <p class="slide-subtitle">AISET systematically explains how AI's social embeddedness drives team outcomes by integrating three foundational theories.</p>
+                <div class="max-w-6xl mx-auto bg-white p-10 rounded-xl shadow-2xl">
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="text-center p-4">
+                            <div class="w-20 h-20 mx-auto mb-4 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl">🤝</div>
+                            <h3 class="text-xl font-bold text-[#2c3e50] mb-2">Interactive Engagement</h3>
+                            <p class="text-gray-600">The degree to which AI actively contributes and provides real-time feedback. High interactivity makes members feel supported and connected, triggering the <span class="font-bold">Motivational Mechanism (SDT)</span>.</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="w-20 h-20 mx-auto mb-4 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl">🎯</div>
+                            <h3 class="text-xl font-bold text-[#2c3e50] mb-2">Contextual Adaptability</h3>
+                            <p class="text-gray-600">AI's ability to adjust its behavior based on the specific task and team context. High adaptability allows AI to provide targeted insights, activating the <span class="font-bold">Cognitive Mechanism (CI)</span>.</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="w-20 h-20 mx-auto mb-4 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl">🔗</div>
+                            <h3 class="text-xl font-bold text-[#2c3e50] mb-2">Social Connectedness</h3>
+                            <p class="text-gray-600">AI's ability to foster a sense of trust and belonging within the team. High connectedness allows AI to seamlessly integrate into the team's workflow, optimizing the <span class="font-bold">Process Mechanism (STS)</span>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-18">
+                <h2 class="slide-title">Practical Implications: From Theory to Application</h2>
+                <p class="slide-subtitle">The findings of this study offer a clear roadmap for businesses and educational institutions.</p>
+                 <div class="grid md:grid-cols-3 gap-8 max-w-6xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-[#2980b9] mb-3 flex items-center"><span class="text-3xl mr-3">🎓</span>Education</h3>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li>Use AI as a "brainstorming partner" to help students with divergent thinking.</li>
+                            <li>Teachers must act as "critical guides," teaching students how to fact-check and critically evaluate AI outputs.</li>
+                            <li>Design AI-assisted learning activities that transform AI into a scaffold for deeper learning, not a crutch that weakens thinking.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-[#27ae60] mb-3 flex items-center"><span class="text-3xl mr-3">🏢</span>Business Management</h3>
+                         <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li>When adopting AI, think beyond cost reduction and consider how to integrate it into collaborative workflows.</li>
+                            <li>Frame AI in a "collaborator" role to unlock the organization's collective intelligence and innovative potential.</li>
+                            <li>Redesign workflows and team communication patterns to establish best practices for human-AI teaming.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-[#c0392b] mb-3 flex items-center"><span class="text-3xl mr-3">🎨</span>Product Design</h3>
+                         <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li>Future AI tools should move beyond simple Q&A interfaces to include a built-in "collaboration mode."</li>
+                            <li>Provide adjustable levels of interactivity, proactivity, and transparency, allowing users to flexibly define AI's role.</li>
+                            <li>Develop AI that can understand team context and dynamics to enable true human-AI co-creation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Outlook -->
+        <section id="outlook" class="main-section">
+            <div class="slide" id="slide-19">
+                <h2 class="slide-title">Research Limitations</h2>
+                <p class="slide-subtitle">Like any study, this research has its boundaries, which point the way for future inquiry.</p>
+                <div class="w-full max-w-4xl bg-white p-8 rounded-xl shadow-2xl">
+                    <ul class="space-y-4">
+                        <li class="flex items-start"><span class="text-3xl mr-4">🌍</span><div><span class="font-bold">Sample Limitation:</span> The sample size is small and primarily from Taiwan, which may limit the generalizability of the findings across cultures (Hofstede, 2001).</div></li>
+                        <li class="flex items-start"><span class="text-3xl mr-4">⏳</span><div><span class="font-bold">Design Limitation:</span> A single-session experiment cannot capture the long-term evolution of trust and cognitive debt in human-AI collaboration.</div></li>
+                        <li class="flex items-start"><span class="text-3xl mr-4">🤖</span><div><span class="font-bold">Model Limitation:</span> The study used only a single model (GPT), and results may be influenced by its specific capabilities.</div></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-19b">
+                <h2 class="slide-title">Future Outlook of the Research</h2>
+                <p class="slide-subtitle">The findings of this study and the AISET theory open up new possibilities for the future of human-AI collaboration.</p>
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <div class="text-5xl mb-4">🛠️</div>
+                        <h3 class="text-xl font-bold text-[#3498db] mb-2">Paradigm Shift in AI Development</h3>
+                        <p>AISET provides a blueprint for developers to shift from pursuing purely technical metrics to designing more interactive, adaptive, and social "collaborative AIs."</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <div class="text-5xl mb-4">📈</div>
+                        <h3 class="text-xl font-bold text-[#2ecc71] mb-2">Rethinking Organizational Management</h3>
+                        <p>The results prompt organizations to rethink AI integration, moving from simple tool adoption to building "human-AI hybrid teams" that maximize collective intelligence.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <div class="text-5xl mb-4">🔬</div>
+                        <h3 class="text-xl font-bold text-[#e67e22] mb-2">New Frontiers in HCI Research</h3>
+                        <p>This study opens new avenues in Human-Computer Interaction (HCI), encouraging more scholars to focus on the social and psychological dynamics of AI in teams, not just individual-level interaction.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide" id="slide-20">
+                <h2 class="slide-title">Journal Submission Strategy: From Thesis to International Publication</h2>
+                <p class="slide-subtitle">This research has the potential for publication in top-tier international journals. The strategy will focus on strengthening the empirical foundation and highlighting the theoretical contribution.</p>
+                <div class="w-full max-w-6xl grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-2xl">
+                        <h3 class="text-2xl font-bold text-center mb-4 flex items-center justify-center"><span class="text-4xl mr-3">🧑‍💻</span>Computers in Human Behavior</h3>
+                        <hr class="my-4">
+                        <h4 class="font-bold mb-2">Rationale for Submission:</h4>
+                        <p class="text-sm">This journal has a strong focus on the psychological and behavioral impacts of technology. This study's in-depth exploration of HCI, trust, algorithm aversion, and the psychological mechanisms of AI's social role aligns perfectly with its scope.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-2xl">
+                        <h3 class="text-2xl font-bold text-center mb-4 flex items-center justify-center"><span class="text-4xl mr-3">🏢</span>Information & Management</h3>
+                        <hr class="my-4">
+                        <h4 class="font-bold mb-2">Rationale for Submission:</h4>
+                        <p class="text-sm">This journal focuses on the application and impact of information systems in organizational management. The proposed AISET theory, its implications for decision-making processes, and its practical recommendations for businesses adopting AI will provide significant insights for its readership.</p>
+                    </div>
+                    <div class="md:col-span-2 bg-white p-8 rounded-xl shadow-2xl">
+                        <h3 class="text-2xl font-bold text-center mb-4 flex items-center justify-center"><span class="text-4xl mr-3">🎯</span>Core Submission Strategy</h3>
+                        <hr class="my-4">
+                        <ul class="space-y-3 text-left">
+                            <li><span class="font-bold">1. Enhance Empirical Rigor:</span> Expand and balance the experimental sample, considering the addition of cross-cultural samples to improve generalizability.</li>
+                            <li><span class="font-bold">2. Emphasize Theoretical Contribution:</span> Focus the paper's narrative on the construction and validation of the AISET theory, strengthening the dialogue with existing literature to highlight its novelty.</li>
+                            <li><span class="font-bold">3. Deepen Research Design:</span> Propose more concrete longitudinal studies or multi-model comparisons in the future research section to demonstrate the study's extensibility and potential.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#2c3e50] text-white text-center p-6">
+        <p>&copy; 2025 Wenzel Herder | National Taiwan University, College of Management, Master's Thesis</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartData = {
+                all: { labels: ['A-1 (Asst.+Human)', 'A-2 (Asst.+AI)', 'B-1 (Collab.+Human)', 'B-2 (Collab.+AI)'], datasets: [ { label: 'Engagement', data: [3.88, 3.42, 4.12, 3.78], backgroundColor: 'rgba(52, 152, 219, 0.7)' }, { label: 'Innovation', data: [3.75, 3.28, 4.02, 3.67], backgroundColor: 'rgba(26, 188, 156, 0.7)' }, { label: 'Efficiency', data: [3.92, 3.65, 4.25, 4.08], backgroundColor: 'rgba(241, 196, 15, 0.7)' }, { label: 'Trust', data: [4.17, 3.67, 4.38, 4.05], backgroundColor: 'rgba(231, 76, 60, 0.7)' }, ] },
+                mode: { labels: ['Mode A (Assistant)', 'Mode B (Collaborator)'], datasets: [ { label: 'Engagement', data: [3.71, 3.98], backgroundColor: 'rgba(52, 152, 219, 0.7)' }, { label: 'Innovation', data: [3.57, 3.89], backgroundColor: 'rgba(26, 188, 156, 0.7)' }, { label: 'Efficiency', data: [3.82, 4.18], backgroundColor: 'rgba(241, 196, 15, 0.7)' }, { label: 'Trust', data: [3.98, 4.24], backgroundColor: 'rgba(231, 76, 60, 0.7)' }, ] },
+                critique: { labels: ['Critique -1 (Human)', 'Critique -2 (GPT)'], datasets: [ { label: 'Engagement', data: [3.98, 3.56], backgroundColor: 'rgba(52, 152, 219, 0.7)' }, { label: 'Innovation', data: [3.86, 3.45], backgroundColor: 'rgba(26, 188, 156, 0.7)' }, { label: 'Efficiency', data: [4.05, 3.83], backgroundColor: 'rgba(241, 196, 15, 0.7)' }, { label: 'Trust', data: [4.26, 3.83], backgroundColor: 'rgba(231, 76, 60, 0.7)' }, ] }
+            };
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            let myChart;
+            function createOrUpdateChart(view) {
+                if (myChart) { myChart.destroy(); }
+                myChart = new Chart(ctx, { type: 'bar', data: chartData[view], options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', }, tooltip: { callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } if (context.parsed.y !== null) { label += context.parsed.y.toFixed(2); } return label; } } } }, scales: { y: { min: 3.2, max: 4.4, title: { display: true, text: 'Average Score (1-5)' } }, x: { ticks: { callback: function(value, index, values) { const label = this.getLabelForValue(value); if (label.length > 10) { return label.match(/.{1,8}/g) || []; } return label; } } } } } });
+            }
+            const buttons = [ { id: 'btn-all', view: 'all' }, { id: 'btn-mode', view: 'mode' }, { id: 'btn-critique', view: 'critique' }, ];
+            function setActiveButton(activeId) { buttons.forEach(button => { const el = document.getElementById(button.id); if (button.id === activeId) { el.classList.add('active'); } else { el.classList.remove('active'); } }); }
+            buttons.forEach(button => { document.getElementById(button.id).addEventListener('click', () => { createOrUpdateChart(button.view); setActiveButton(button.id); }); });
+            createOrUpdateChart('all');
+            setActiveButton('btn-all');
+            
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('header nav a');
+            const mobileNavLinks = document.querySelectorAll('#mobile-menu a');
+            
+            const allLinks = [...navLinks, ...mobileNavLinks];
+
+            allLinks.forEach(anchor => { 
+                anchor.addEventListener('click', function (e) { 
+                    e.preventDefault(); 
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    if(!mobileMenu.classList.contains('hidden')){
+                        mobileMenu.classList.add('hidden');
+                    }
+                }); 
+            });
+
+            const sections = document.querySelectorAll('section.main-section');
+            const headerNavLinks = document.querySelectorAll('header .hidden a');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                headerNavLinks.forEach(a => {
+                    a.classList.remove('active');
+                    if(a.getAttribute('href').substring(1) === current) {
+                        a.classList.add('active');
+                    }
+                });
+                const header = document.getElementById('header');
+                if (window.scrollY > 50) { header.classList.add('bg-opacity-90', 'backdrop-blur-sm'); } else { header.classList.remove('bg-opacity-90', 'backdrop-blur-sm'); }
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
